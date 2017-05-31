@@ -17,8 +17,8 @@ from copy import deepcopy
 from numpy import *
 
 class NelGraphGenInterpolation(ngg.NelGraphGen):
-    tcmax = 12; 
-    tu = 60*1; # 2 hrs intervals, 12 hrs
+    tcmax = 6; 
+    tu = 60*2; # 2 hrs intervals, 12 hrs
     toffset = 720; # toffset changes will affect has_last_12h
 
     def __init__(self):

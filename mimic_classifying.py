@@ -122,73 +122,89 @@ def nmfClassify_addMoreFeature(data_tr, data_te, gt_tr, gt_te, pt_tr, pt_te, nc=
         print 'load %s' % fnpik
         with open(fnpik, 'rb') as f:
             [m, mtr, mte] = pickle.load(f)
+    else:
+        # t1 = datetime.now()
+        start = time.time()
+        m = NMF(nc, init='nndsvd', sparseness='components', eta=2, random_state=2222)
+        m.fit(data_tr)
+        mtr = m.transform(data_tr)
+        mte = m.transform(data_te)
+
+        td = time.time() - start
+        # t2 = datetime.now()
+        # td = t2 - t1
+        # print 'NMF takes %f secs, reconstruction error %f' % (td.total_seconds(), m.reconstruction_err_)
+        print 'NMF takes %f secs, reconstruction error %f' % (td, m.reconstruction_err_)
+
+        with open(fnpik, 'wb') as f:
+            pickle.dump([m, mtr, mte], f, -1)
         
-        train = pd.read_csv(fnaddtr)
-        test = pd.read_csv(fnaddte)
-        train_index = np.unique(train['sid'].tolist())
-        test_index = np.unique(test['sid'].tolist())
-        # train = train.drop(['sid','timeindex'],axis=1)
-        # test = test.drop(['sid','timeindex'],axis=1)
-        if selected_features != None:
-            train = train[selected_features]
-            test = test[selected_features]
-        tr = np.array(train)
-        te = np.array(test)
-        if len(train_index) != len(tr) or len(test_index) != len(te):
-            exit('interesting.')
+    train = pd.read_csv(fnaddtr)
+    test = pd.read_csv(fnaddte)
+    train_index = np.unique(train['sid'].tolist())
+    test_index = np.unique(test['sid'].tolist())
+    # train = train.drop(['sid','timeindex'],axis=1)
+    # test = test.drop(['sid','timeindex'],axis=1)
+    if selected_features != None:
+        train = train[selected_features]
+        test = test[selected_features]
+    tr = np.array(train)
+    te = np.array(test)
+    if len(train_index) != len(tr) or len(test_index) != len(te):
+        exit('interesting.')
 
-        pt_tr_add = {}
-        for i in range(len(train_index)):
-            pt_tr_add[train_index[i]] = i
-        pt_te_add = {}
-        for i in range(len(test_index)):
-            pt_te_add[test_index[i]] = i
+    pt_tr_add = {}
+    for i in range(len(train_index)):
+        pt_tr_add[train_index[i]] = i
+    pt_te_add = {}
+    for i in range(len(test_index)):
+        pt_te_add[test_index[i]] = i
 
-        # print train_index
-        # print test_index
-        # print pt_tr
-        # print pt_te
+    # print train_index
+    # print test_index
+    # print pt_tr
+    # print pt_te
 
-        tridlist = map(lambda x:pt_tr_add[int(x)],pt_tr)
-        teidlist = map(lambda x:pt_te_add[int(x)],pt_te)
+    tridlist = map(lambda x:pt_tr_add[int(x)],pt_tr)
+    teidlist = map(lambda x:pt_te_add[int(x)],pt_te)
 
-        # tridlist1 = []
-        # teidlist1 = []
-        # j = 0
-        # for i in range(len(train_index)):
-        #     if j >= len(pt_tr):
-        #         print "here"
-        #         break
-        #     if train_index[i] == int(pt_tr[j]):
-        #         tridlist1.append(i)
-        #         j += 1
+    # tridlist1 = []
+    # teidlist1 = []
+    # j = 0
+    # for i in range(len(train_index)):
+    #     if j >= len(pt_tr):
+    #         print "here"
+    #         break
+    #     if train_index[i] == int(pt_tr[j]):
+    #         tridlist1.append(i)
+    #         j += 1
 
-        # j = 0
-        # for i in range(len(test_index)):
-        #     if j >= len(pt_te):
-        #         print "or here"
-        #         break
-        #     if test_index[i] == int(pt_te[j]):
-        #         teidlist1.append(i)
-        #         j += 1
+    # j = 0
+    # for i in range(len(test_index)):
+    #     if j >= len(pt_te):
+    #         print "or here"
+    #         break
+    #     if test_index[i] == int(pt_te[j]):
+    #         teidlist1.append(i)
+    #         j += 1
 
-        # if tridlist != tridlist1 or teidlist != teidlist1:
-        #     exit('look')
+    # if tridlist != tridlist1 or teidlist != teidlist1:
+    #     exit('look')
 
-        tr = tr[tridlist]
-        te = te[teidlist]
+    tr = tr[tridlist]
+    te = te[teidlist]
 
-        res_baseline = sklu.classify(tr, te, gt_tr, gt_te, LogisticRegression(penalty='l1', class_weight='balanced'), prob=True, norm=norm, header='%sbaseline'%(header))
+    res_baseline = sklu.classify(tr, te, gt_tr, gt_te, LogisticRegression(penalty='l1', class_weight='balanced'), prob=True, norm=norm, header='%sbaseline'%(header))
 
-        print mtr.shape
-        print mte.shape
-        mtr = np.hstack([mtr,tr])
-        mte = np.hstack([mte,te])
-        print mtr.shape
-        print mte.shape
+    print mtr.shape
+    print mte.shape
+    mtr = np.hstack([mtr,tr])
+    mte = np.hstack([mte,te])
+    print mtr.shape
+    print mte.shape
 
-        # pd.DataFrame(mtr).to_csv('../observer/error_analysis/temporal+baseline_train_fold%d.csv'%foldi)
-        # pd.DataFrame(mte).to_csv('../observer/error_analysis/temporal+baseline_test_fold%d.csv'%foldi)
+    # pd.DataFrame(mtr).to_csv('../observer/error_analysis/temporal+baseline_train_fold%d.csv'%foldi)
+    # pd.DataFrame(mte).to_csv('../observer/error_analysis/temporal+baseline_test_fold%d.csv'%foldi)
 
     print '# positive in test: %d' % sum(gt_te)
     if clf == None:

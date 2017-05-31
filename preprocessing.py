@@ -4,6 +4,39 @@ import coding_util as cu
 # from sklearn.model_selection import KFold
 from sklearn.cross_validation import KFold
 
+standardized_features_for_classify = ['readmit', 'sid', 'timeindex', 'Creatinine.standardized', 'BUN.standardized', 
+'BUNtoCr.standardized', 'urineByHrByWeight.standardized', 'eGFR.standardized', 'AST.standardized', 
+'ALT.standardized', 'TBili.standardized', 'DBili.standardized', 'Albumin.standardized', 
+'tProtein.standardized', 'ASTtoALT.standardized', 'HCT.standardized', 'Hgb.standardized', 
+'INR.standardized', 'Platelets.standardized', 'PT.standardized', 'PTT.standardized', 'RBC.standardized', 
+'WBC.standardized', 'RESP.standardized', 'mSaO2.standardized', 'PaO2toFiO2.standardized', 
+'MinuteVent.standardized', 'DeliveredTidalVolume.standardized', 'FiO2Set.standardized', 
+'PEEPSet.standardized', 'PIP.standardized', 'PlateauPres.standardized', 'RAW.standardized', 
+'RSBI.standardized', 'RSBIRate.standardized', 'mSBP.standardized', 'mDBP.standardized', 
+'mMAP.standardized', 'CV_HR.standardized', 'mCrdIndx.standardized', 'mCVP.standardized', 
+'Art_BE.standardized', 'Art_CO2.standardized', 'Art_PaCO2.standardized', 'Art_PaO2.standardized', 
+'Art_pH.standardized', 'Na.standardized', 'K.standardized', 'Cl.standardized', 'Glucose.standardized', 
+'Ca.standardized', 'Mg.standardized', 'IonCa.standardized', 'Lactate.standardized', 'GCS.standardized', 
+'temp.standardized', 'Age.standardized', 'Antiarrhythmic_agent', 'Anticoagulant', 'Antiplatelet_agent', 
+'Benzodiazepine', 'beta.Blocking_agent', 'Calcium_channel_blocking_agent', 'Diuretic', 'Hemostatic_agent', 
+'Inotropic_agent', 'Insulin', 'Nondepolarizing_agent', 'sedatives', 'Somatostatin_preparation', 
+'Sympathomimetic_agent', 'Thrombolytic_agent', 'Vasodilating_agent', 'AIDS', 'HemMalig', 'MetCarcinoma', 
+'medtype.label', 'location.label']
+
+raw_features_for_classify = ['readmit', 'sid', 'timeindex', 'Creatinine', 'BUN', 'BUNtoCr', 
+'urineByHrByWeight', 'eGFR', 'AST', 'ALT', 'TBili', 'DBili', 'Albumin', 'tProtein', 
+'ASTtoALT', 'HCT', 'Hgb', 'INR', 'Platelets', 'PT', 'PTT', 'RBC', 'WBC', 'RESP', 
+'mSaO2', 'PaO2toFiO2', 'MinuteVent', 'DeliveredTidalVolume', 'FiO2Set', 'PEEPSet', 
+'PIP', 'PlateauPres', 'RAW', 'RSBI', 'RSBIRate', 'mSBP', 'mDBP', 'mMAP', 'CV_HR', 
+'mCrdIndx', 'mCVP', 'Art_BE', 'Art_CO2', 'Art_PaCO2', 'Art_PaO2', 'Art_pH', 'Na', 
+'K', 'Cl', 'Glucose', 'Ca', 'Mg', 'IonCa', 'Lactate', 'GCS', 'temp', 'Age', 
+'Antiarrhythmic_agent', 'Anticoagulant', 'Antiplatelet_agent', 'Benzodiazepine', 
+'beta.Blocking_agent', 'Calcium_channel_blocking_agent', 'Diuretic', 'Hemostatic_agent', 
+'Inotropic_agent', 'Insulin', 'Nondepolarizing_agent', 'sedatives', 
+'Somatostatin_preparation', 'Sympathomimetic_agent', 'Thrombolytic_agent', 
+'Vasodilating_agent', 'AIDS', 'HemMalig', 'MetCarcinoma', 'medtype.label', 'location.label']
+
+
 labs = ['Creatinine', 'BUN', 'BUNtoCr', 
 'urineByHrByWeight', 'eGFR', 'AST', 'ALT', 'TBili', 'DBili', 'Albumin', 'tProtein', 
 'ASTtoALT', 'HCT', 'Hgb', 'INR', 'Platelets', 'PT', 'PTT', 'RBC', 'WBC', 'RESP', 
@@ -134,6 +167,7 @@ def clean_data(fn, fout):
 	data.to_csv(fout,index=False)
 
 def split_nfolds(fin, fout_prefix, shuffle=False, seed=2222):
+	print 'split_nfolds'
 	df = pd.read_csv(fin)
 	gp = df.groupby('sid')
 	# kf = KFold(n_splits=5, shuffle=shuffle, random_state=seed)
@@ -153,24 +187,25 @@ def split_nfolds(fin, fout_prefix, shuffle=False, seed=2222):
 		testset.to_csv('%s_test_fold%d.csv'%(fout_prefix,j),index=False)
 		j += 1
 
-def split_by_feature_type(cdn, fn_prefix, raw_colname, z_colname):
+def split_by_feature_type(cdn, fn_prefix):
 	'''
 	split data into two sets, one contains raw features + medical features, 
 	another contains standardized features + medical features.
 	'''
+	print 'split_by_feature_type'
 	for i in range(5):
 		training = pd.read_csv('%s_train_fold%d.csv'%(fn_prefix,i))
 		testing = pd.read_csv('%s_test_fold%d.csv'%(fn_prefix,i))
-		raw_train = training[raw_colname]
-		raw_test = testing[raw_colname]
-		z_train = training[z_colname]
-		z_test = testing[z_colname]
+		raw_train = training[raw_features_for_classify]
+		raw_test = testing[raw_features_for_classify]
+		# z_train = training[standardized_features_for_classify]
+		# z_test = testing[standardized_features_for_classify]
 		cu.checkAndCreate('%s/raw/'%cdn)
-		cu.checkAndCreate('%s/z/'%cdn)
+		# cu.checkAndCreate('%s/z/'%cdn)
 		raw_train.to_csv('%s/raw/train_fold%d.csv'%(cdn,i),index=False)
 		raw_test.to_csv('%s/raw/test_fold%d.csv'%(cdn,i),index=False)
-		z_train.to_csv('%s/z/train_fold%d.csv'%(cdn,i),index=False)
-		z_test.to_csv('%s/z/test_fold%d.csv'%(cdn,i),index=False)
+		# z_train.to_csv('%s/z/train_fold%d.csv'%(cdn,i),index=False)
+		# z_test.to_csv('%s/z/test_fold%d.csv'%(cdn,i),index=False)
 
 def split_test_by_patient(cdn, out_folder, suffix=''):
 	'''
@@ -324,7 +359,7 @@ def break_time_one_hour_interval(fnin, fout):
 	out_df.to_csv(fout, index=False)
 
 def impute_by_interpolation_on_last12h(fin, fout, logfile='../data/seed2222/raw/extrapolation_log.txt'):
-	
+	print 'impute_by_interpolation_on_last12h'
 	data = pd.read_csv(fin)# data.columns = cols
 	grouped = data.groupby('sid')
 	interped = pd.DataFrame(columns=data.columns)
@@ -342,11 +377,11 @@ def impute_by_interpolation_on_last12h(fin, fout, logfile='../data/seed2222/raw/
 			interped = interped.append(group)
 			continue
 
-		# starttimeindex = lasttimeindex - toffset
-		# before_last12h_data = group[group['timeindex']<starttimeindex]
+		starttimeindex = lasttimeindex - toffset
+		before_last12h_data = group[group['timeindex']<starttimeindex]
 
-		# imputed_last12 = pd.DataFrame(columns=data.columns)
-		imputed_pt = pd.DataFrame(columns=data.columns)
+		imputed_last12 = pd.DataFrame(columns=data.columns)
+		# imputed_pt = pd.DataFrame(columns=data.columns)
 		for col in t:
 			# print col
 			imputed_col = []
@@ -358,12 +393,12 @@ def impute_by_interpolation_on_last12h(fin, fout, logfile='../data/seed2222/raw/
 						imputed_col = interp_lab_last12h(group,col,lasttimeindex)
 						logstr += '%d_%s: interped\n'%(sid,col)
 						# interp
-					# elif curtimeindex < lasttimeindex - toffset:
-					# 	# hold
-					# 	# n = group[group['timeindex']>=(lasttimeindex-toffset)].shape[0]
-					# 	n = group.shape[0]
-					# 	imputed_col = [v] * n
-					# 	logstr += '%d_%s: hold\n'%(sid,col)
+					elif curtimeindex < lasttimeindex - toffset:
+						# hold
+						n = group[group['timeindex']>=(lasttimeindex-toffset)].shape[0]
+						# n = group.shape[0]
+						imputed_col = [v] * n
+						logstr += '%d_%s: hold\n'%(sid,col)
 					else:
 						# hold forward and backward
 						imputed_col = hold_fb_lab_last12h(group,col,lasttimeindex,curtimeindex,v)
@@ -371,13 +406,12 @@ def impute_by_interpolation_on_last12h(fin, fout, logfile='../data/seed2222/raw/
 					break
 			# print imputed_col
 			if len(imputed_col) == 0:
-				imputed_col = [np.nan] * group.shape[0]
-				# imputed_col = [np.nan] * group[group['timeindex']>=(lasttimeindex-toffset)].shape[0]
-			# imputed_last12[col] = imputed_col
-			imputed_pt[col] = imputed_col
+				# imputed_col = [np.nan] * group.shape[0]
+				imputed_col = [np.nan] * group[group['timeindex']>=(lasttimeindex-toffset)].shape[0]
+			imputed_last12[col] = imputed_col
+			# imputed_pt[col] = imputed_col
 
-		# imputed_pt = before_last12h_data.append(imputed_last12)
-		# imputed_pt = before_last12h_data.append(imputed_last12)
+		imputed_pt = before_last12h_data.append(imputed_last12)
 		interped = interped.append(imputed_pt)
 	interped.to_csv(fout,index=False)
 	fn = open(logfile,'w')
@@ -385,13 +419,13 @@ def impute_by_interpolation_on_last12h(fin, fout, logfile='../data/seed2222/raw/
 	fn.close()
 
 def interp_lab_last12h(df,col,lasttimeindex):
-	# starttimeindex = lasttimeindex - toffset
-	# # print starttimeindex
-	# dx = df[df['timeindex']>=starttimeindex]
-	# xvals = dx['timeindex']
-
-	dx = df
+	starttimeindex = lasttimeindex - toffset
+	# print starttimeindex
+	dx = df[df['timeindex']>=starttimeindex]
 	xvals = dx['timeindex']
+
+	# dx = df
+	# xvals = dx['timeindex']
 
 	# print xvals
 
@@ -421,11 +455,11 @@ def interp_lab_last12h(df,col,lasttimeindex):
 # print interp_lab_last12h(d21,'timeindex',1117)
 
 def hold_fb_lab_last12h(df,col,lasttimeindex,curtimeindex,v):
-	# starttimeindex = lasttimeindex - toffset
-	# dx = df[df['timeindex']>=starttimeindex]
-	# xvals = dx['timeindex']
-	dx = df
+	starttimeindex = lasttimeindex - toffset
+	dx = df[df['timeindex']>=starttimeindex]
 	xvals = dx['timeindex']
+	# dx = df
+	# xvals = dx['timeindex']
 
 	x = []
 	y = []
@@ -441,6 +475,25 @@ def hold_fb_lab_last12h(df,col,lasttimeindex,curtimeindex,v):
 			y.append(v)
 
 	return np.interp(xvals,x,y)
+
+def get_last_measurements(fin,fout):
+      data = pd.read_csv(fin)
+      # data.columns = cols
+      grouped = data.groupby('sid')
+
+      lm = pd.DataFrame(columns=data.columns)
+      for sid, group in grouped:
+      	# t = group.sort_values(by = 'timeindex', ascending = False)
+            t = group.sort(columns='timeindex',ascending = False)
+            s = pd.Series(index=data.columns)
+            for col in t:
+                  for i,v in t[col].iteritems():
+                        if not np.isnan(v):
+                              # print i,v
+                              s[col] = v
+                              break
+            lm = lm.append(s,ignore_index=True)
+      lm.to_csv(fout,index=False)
 # test
 # df = pd.read_csv('../data/seed2222/raw/test_fold0.csv')
 # d21 = df[df['sid']==112]

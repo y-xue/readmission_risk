@@ -398,11 +398,11 @@ class Experiment():
 		p3 = '-m1'
 		p4 = '-s0.%s'%(freq_t)
 		p5 = fin
-		p6 = '%s_tt.out'%(fout_prefix)
-		p7 = '%s_tt.ids'%(fout_prefix)
+		p6 = '%s.out'%(fout_prefix)
+		p7 = '%s.ids'%(fout_prefix)
 		cmd = [command, mode, filename, funcname, p1, p2, p3, p4, p5, p6, p7]
 		print ' '.join(cmd)
-		with open('%s_%s_moss_log_tt'%(fout_prefix,freq_t), 'w') as f:
+		with open('%s_%s_moss_log'%(fout_prefix,freq_t), 'w') as f:
 			subprocess.call(cmd, stderr=f)
 
 	def read_fnout(self, fnout):
