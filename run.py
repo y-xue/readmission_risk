@@ -184,9 +184,17 @@ class Experiment():
 		ptwd = md.read_pt_wd_mat(fn_pt_wd_mat)
 		sgs = md.read_sgs(fn_sgs)
 		spt = md.read_sparse_tensor(fn_sparse_tensor)
+
+		print 'before_sg_filtering_sgs_fold%d: '%foldi, len(sgs)
+		with open('%s/isg%d/pt_sg_w/before_sg_filtering_ptsg_%s_fold%d'%(self.cdn,isg,freq_t,foldi),'wb') as f:
+			pickle.dump(ptsg,f)
+		with open('%s/isg%d/pt_sg_w/before_sg_filtering_sgs_%s_fold%d'%(self.cdn,isg,freq_t,foldi),'wb') as f:
+			pickle.dump(sgs,f)
+
 		(hiso, hsgstr, hsgc, hsgsize) = md.sg_subiso(sgs)
 		(ptsg, sgs, sptsel) = md.filter_sg(ptsg, hiso, sgs, spt=spt)
 		# (ptsg, sgs) = md.filter_sg(ptsg, hiso, sgs)
+		print 'after_sg_filtering_sgs_fold%d: '%foldi, len(sgs)
 		gt = md.read_pt_gt(fn_pt_gt)
 		pt = md.read_pt_lab(fn_pt_lab)
 		self.write_pt_sg_before_filter_pt(ptsg, ptwd, sgs, pt, gt, isg, freq_t, foldi)
