@@ -1,5 +1,4 @@
 # Predicting ICU readmission using grouped physiological and medication trends
-[Access to full paper](https://www.ncbi.nlm.nih.gov/pubmed/30213670).
 
 ## Background: 
 Patients who are readmitted to an intensive care unit (ICU) usually have a high risk of mortality and an increased length of stay. ICU readmission risk prediction may help physicians to re-evaluate the patient’s physical conditions before patients are discharged and avoid preventable readmissions. ICU readmission pre- diction models are often built based on physiological variables. Intuitively, snapshot measurements, especially the last measurements, are effective predictors that are widely used by researchers. However, methods that only use snapshot measurements neglect predictive information contained in the trends of physiological and medi- cation variables. Mean, maximum or minimum values take multiple time points into account and capture their summary statistics, however, these statistics are not able to catch the detailed picture of temporal trends. In this study, we find strong predictors with ability of capturing detailed temporal trends of variables for 30-day readmission risk and build prediction models with high accuracy.
@@ -12,3 +11,5 @@ Our dataset consists of 1170 patients who are alive 30 days after discharge from
 
 ## Conclusions: 
 Grouped physiological and medication trends carry predictive information for ICU readmission risk. In order to build predictive models with higher accuracy, we should add grouped physiological and medication trends as complementary features to snapshot measurements.
+
+[Access to full paper](https://www.ncbi.nlm.nih.gov/pubmed/30213670).
