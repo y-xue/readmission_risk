@@ -1,3 +1,7 @@
+"""
+Data preprocessing: splitting, normalization, imputation, breaking into time intervals.
+Created by yxue - 05-18-2017
+"""
 import pandas as pd
 import numpy as np
 import coding_util as cu

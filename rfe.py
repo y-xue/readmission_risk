@@ -1,3 +1,8 @@
+"""
+Feature selection with RFE.
+Created by yxue - 05-18-2017
+"""
+
 import pandas as pd
 import pickle
 from sklearn.linear_model import LogisticRegression

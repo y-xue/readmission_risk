@@ -1,3 +1,8 @@
+"""
+Subgraph mining using moss.
+Created by yxue - 05-18-2017
+"""
+
 import pandas as pd
 import subprocess
 import re

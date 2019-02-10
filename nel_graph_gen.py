@@ -1,6 +1,7 @@
 """
 Generate graph database from csv files of MIMIC data per Rohit's output.
-yluo - 04/26/2013 creation
+Modified by yxue - 05-18-2017
+First created by yluo - 04/26/2013
 
 """
 

@@ -1,7 +1,6 @@
-""" yluo - 07/29/2014 creation
+""" Modified by yxue - 05-18-2017
+First created by yluo - 07/29/2014
 """
-__author__= """Yuan Luo (yuanluo@mit.edu)"""
-__revision__="0.5"
 
 import numpy as np
 import os

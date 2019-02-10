@@ -1,6 +1,7 @@
 """
-Clustering experiment for MGH lymphoma data.
-yluo - 01/26/2014 creation
+Modified Clustering experiment for MGH lymphoma data.
+Modified by yxue - 05-18-2017
+First created by yluo - 01/26/2014
 """
 
 #! /usr/bin/python;

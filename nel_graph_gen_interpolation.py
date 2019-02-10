@@ -1,7 +1,8 @@
 """
 Generate graph database from csv files of MIMIC data per Rohit's output, using 
 interpolation.
-yluo - 05/18/2013 creation
+Modified by yxue - 05-18-2017
+First created by yluo - 05/18/2013
 """
 
 #! /usr/bin/python;
